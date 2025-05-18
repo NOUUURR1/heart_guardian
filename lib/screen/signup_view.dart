@@ -1,10 +1,13 @@
+import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'home_view.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _SignUpViewState createState() => _SignUpViewState();
 }
 
@@ -12,12 +15,104 @@ class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  Future<void> _signUp() async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+    final String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (password != confirmPassword) {
+      _showCustomDialog("Passwords do not match", false);
+      return;
+    }
+
+    final url = Uri.parse('http://192.168.105.148:8000/signup');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email, 'password': password}),
+      );
+
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        _showCustomDialog("Account created successfully.", true);
+      } else {
+        _showCustomDialog(data['message'], false);
+      }
+    } catch (e) {
+      _showCustomDialog("Something went wrong. Try again later.", false);
+    }
+  }
+
+  void _showCustomDialog(String message, bool success) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pop(); // Close the dialog
+          if (success) {
+            if (!mounted) return;
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeView()),
+            );
+          }
+        });
+
+        return Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(25),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.all(25),
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(color: const Color(0xFF042D46), width: 5),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white, size: 60),
+                    const SizedBox(height: 20),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFF042D46),
+                        fontWeight: FontWeight.bold,
+
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFA0D1EF), Color(0xFFFFFFFF)],
             begin: Alignment.topCenter,
@@ -30,7 +125,7 @@ class _SignUpViewState extends State<SignUpView> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  Text(
+                  const Text(
                     "Account",
                     style: TextStyle(
                       fontSize: 28,
@@ -38,13 +133,13 @@ class _SignUpViewState extends State<SignUpView> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 10,
@@ -57,32 +152,33 @@ class _SignUpViewState extends State<SignUpView> {
                       child: Column(
                         children: [
                           TextFormField(
+                            controller: _nameController,
                             decoration: InputDecoration(
                               labelText: "Full Name",
-                              prefixIcon: Icon(Icons.person),
+                              prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                          SizedBox(height: 15),
-
+                          const SizedBox(height: 15),
                           TextFormField(
+                            controller: _emailController,
                             decoration: InputDecoration(
                               labelText: "Phone Or Gmail",
-                              prefixIcon: Icon(Icons.email),
+                              prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                          SizedBox(height: 15),
-
+                          const SizedBox(height: 15),
                           TextFormField(
+                            controller: _passwordController,
                             obscureText: _obscurePassword,
                             decoration: InputDecoration(
                               labelText: "Password",
-                              prefixIcon: Icon(Icons.lock),
+                              prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -100,13 +196,13 @@ class _SignUpViewState extends State<SignUpView> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 15),
-
+                          const SizedBox(height: 15),
                           TextFormField(
+                            controller: _confirmPasswordController,
                             obscureText: _obscureConfirmPassword,
                             decoration: InputDecoration(
                               labelText: "Confirm Password",
-                              prefixIcon: Icon(Icons.lock),
+                              prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -125,24 +221,27 @@ class _SignUpViewState extends State<SignUpView> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
-
+                          const SizedBox(height: 20),
                           Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Color(0xFF042D46),
+                              color: const Color(0xFF042D46),
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {}
+                                if (_formKey.currentState!.validate()) {
+                                  _signUp();
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
-                                padding: EdgeInsets.symmetric(vertical: 15),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 "SIGN UP",
                                 style: TextStyle(
                                   fontSize: 18,
@@ -151,15 +250,13 @@ class _SignUpViewState extends State<SignUpView> {
                               ),
                             ),
                           ),
-
-                          SizedBox(height: 10),
-
+                          const SizedBox(height: 10),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text("Already have an account? Sign in"
-                          
+                            child: const Text(
+                              "Already have an account? Sign in",
                             ),
                           ),
                         ],

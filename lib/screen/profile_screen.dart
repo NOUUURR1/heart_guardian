@@ -1,16 +1,94 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  TextEditingController fullNameController = TextEditingController(
+    text: 'Alaa Elashmawi',
+  );
+  bool isFullNameUpdated = false;
+  bool _obscurePassword = true;
+  TextEditingController birthdateController = TextEditingController(
+    text: '19/07/2003',
+  );
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2003, 7, 19),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        birthdateController.text =
+            "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  void _updateFullName() {
+    // هنا هتحط منطق حفظ الاسم الجديد (في الذاكرة المؤقتة، قاعدة البيانات، إلخ.)
+    if (fullNameController.text != 'Alaa Elashmawi') {
+      // ... حفظ الاسم الجديد ...
+      setState(() {
+        isFullNameUpdated = true;
+      });
+    } else {
+      setState(() {
+        isFullNameUpdated = false;
+      });
+    }
+  }
+
+  void _updateProfile() async {
+    String fullName = fullNameController.text;
+    String _ = birthdateController.text;
+    if (fullName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('الاسم الكامل لا يمكن أن يكون فارغًا')),
+      );
+      return;
+    }
+    setState(() {
+      // عرض مؤشر التحميل 
+    });
+
+    await Future.delayed(const Duration(seconds: 2));
+    bool isSaveSuccessful = true; 
+
+    setState(() {
+      // إخفاء مؤشر التحميل (لو هتستخدمه)
+    });
+
+    if (isSaveSuccessful) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم تحديث البروفايل بنجاح!')),
+      );
+      // ممكن تعمل navigate لشاشة تانية أو أي إجراء تاني
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('حدث خطأ أثناء تحديث البروفايل. حاول مرة أخرى.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 68, top: 15),
-          child: const Text(
+        title: const Padding(
+          padding: EdgeInsets.only(left: 68, top: 15),
+          child: Text(
             'My Profile',
             style: TextStyle(
               color: Color(0XFF042D46),
@@ -75,12 +153,17 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: fullNameController,
+              onSubmitted: (_) => _updateFullName(),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 hintText: 'Alaa Elashmawi',
-                suffixIcon: const Icon(Icons.check, color: Color(0XFF042D46)),
+                suffixIcon: Icon(
+                  Icons.check,
+                  color: isFullNameUpdated ? Color(0XFF042D46) : Colors.grey,
+                ),
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
               ),
@@ -105,13 +188,22 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10.0),
             TextField(
-              obscureText: true,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 hintText: '**********',
-                suffixIcon: const Icon(Icons.visibility_off),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
               ),
@@ -123,21 +215,27 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: birthdateController,
+              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 hintText: '19/07/2003',
-                suffixIcon: const Icon(Icons.arrow_drop_down),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.arrow_drop_down),
+                  onPressed: () => _selectDate(context),
+                ),
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
               ),
+              onTap: () => _selectDate(context),
             ),
             const SizedBox(height: 40.0),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _updateProfile, 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF042D46),
                   padding: const EdgeInsets.symmetric(vertical: 15.0),

@@ -1,12 +1,14 @@
+import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'signup_view.dart';
+import 'package:http/http.dart' as http;
 import 'home_view.dart';
+import 'signup_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginViewState createState() => _LoginViewState();
 }
 
@@ -15,11 +17,95 @@ class _LoginViewState extends State<LoginView> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  Future<void> loginUser() async {
+    final url = Uri.parse('http://192.168.105.148:8000/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': emailController.text,
+          'password': passwordController.text,
+        }),
+      );
+
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (context) => Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 30,
+                        horizontal: 25,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(
+                          color: const Color(0xFF042D46),
+                          width: 5,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                            size: 60,
+                          ),
+                          SizedBox(height: 15),
+                          Text(
+                            'You have logged in successfully.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF042D46),
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+        );
+
+        await Future.delayed(const Duration(seconds: 2));
+        if (!mounted) return;
+        Navigator.of(context)
+          ..pop()
+          ..pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomeView()),
+          );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error connecting to server')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFA0D1EF), Color(0xFFFFFFFF)],
             begin: Alignment.topLeft,
@@ -32,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Hello\nSign in!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -41,13 +127,13 @@ class _LoginViewState extends State<LoginView> {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
@@ -59,19 +145,19 @@ class _LoginViewState extends State<LoginView> {
                     children: [
                       TextField(
                         controller: emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: "Gmail",
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       TextField(
                         controller: passwordController,
                         obscureText: _isObscured,
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon: Icon(Icons.lock),
+                          prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isObscured
@@ -84,10 +170,10 @@ class _LoginViewState extends State<LoginView> {
                               });
                             },
                           ),
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
@@ -95,39 +181,19 @@ class _LoginViewState extends State<LoginView> {
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Color(0xFF042D46),
+                          color: const Color(0xFF042D46),
                         ),
-
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (emailController.text ==
-                                    'projectteam1235@gmail.com' &&
-                                passwordController.text == 'ASFN@123456789') {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeView(),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'البريد أو كلمة السر غير صحيحة',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
+                          onPressed: loginUser,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 100,
                               vertical: 15,
                             ),
@@ -135,7 +201,7 @@ class _LoginViewState extends State<LoginView> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             "SIGN IN",
                             style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
@@ -144,7 +210,7 @@ class _LoginViewState extends State<LoginView> {
                     ],
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -152,7 +218,7 @@ class _LoginViewState extends State<LoginView> {
                       MaterialPageRoute(builder: (context) => SignUpView()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Don't have an account? Sign up",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -164,8 +230,4 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(home: LoginView()));
 }

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomeScreenContent extends StatelessWidget {
   const HomeScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
+    DatabaseReference bpmRef = FirebaseDatabase.instance.ref("sensorData/BPM");
+    DatabaseReference spo2Ref = FirebaseDatabase.instance.ref(
+      "sensorData/SpO2",
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -34,14 +39,55 @@ class HomeScreenContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Expanded(
-                  child: _buildDataItem(
-                    title: 'Oxygen\nPercentage',
-                    value: '95 - 100 %',
+                  child: StreamBuilder<DatabaseEvent>(
+                    stream: spo2Ref.onValue,
+                    builder: (context, snapshot) {
+                      final value = snapshot.data?.snapshot.value;
+                      return _buildDataItem(
+                        title: 'Oxygen\nPercentage',
+                        valueWidget:
+                            value != null
+                                ? Text(
+                                  '$value %',
+                                  style: const TextStyle(
+                                    color: Color(0xFF042D46),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                )
+                                : const CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 16.0),
                 Expanded(
-                  child: _buildDataItem(title: 'Heartbeats', value: '60-100'),
+                  child: StreamBuilder<DatabaseEvent>(
+                    stream: bpmRef.onValue,
+                    builder: (context, snapshot) {
+                      final value = snapshot.data?.snapshot.value;
+                      return _buildDataItem(
+                        title: 'Heartbeats',
+                        valueWidget:
+                            value != null
+                                ? Text(
+                                  '$value bpm',
+                                  style: const TextStyle(
+                                    color: Color(0xFF042D46),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                )
+                                : const CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -63,17 +109,15 @@ class HomeScreenContent extends StatelessWidget {
             ),
           ),
         ),
-        // باقي محتوى الـ body هيكون هنا
       ],
     );
   }
 
-  Widget _buildDataItem({required String title, required String value}) {
+  Widget _buildDataItem({required String title, required Widget valueWidget}) {
     return Card(
       color: const Color(0xFF6BAED6).withOpacity(0.5),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -91,15 +135,7 @@ class HomeScreenContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            Text(
-              value,
-              style: const TextStyle(
-                color: Color(0xFF042D46),
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins',
-              ),
-            ),
+            valueWidget,
           ],
         ),
       ),

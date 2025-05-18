@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/login_view.dart';
 import 'package:heart_guardian/screen/signup_view.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
+  WelcomePage({super.key});
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<void> _handleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final String? accessToken = googleAuth.accessToken;
+        final String? idToken = googleAuth.idToken;
+
+        print('تم تسجيل الدخول بنجاح: ${googleUser.displayName}');
+      } else {
+        print('تم إلغاء تسجيل الدخول');
+      }
+    } catch (error) {
+      print('حدث خطأ أثناء تسجيل الدخول: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +75,11 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 60),
               const Text(
                 "Login with Social Media",
-                style: TextStyle(fontSize: 16, color: Color(0xFF042D46)),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF848383),
+                  fontFamily: 'Agbalumo',
+                ),
               ),
               const SizedBox(height: 20),
               Row(
@@ -75,6 +101,14 @@ class WelcomePage extends StatelessWidget {
                       size: 30,
                     ),
                     onPressed: () {},
+                  ),
+                  const SizedBox(width: 20),
+                  InkWell(
+                    onTap: _handleSignIn,
+                    child: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      height: 30,
+                    ),
                   ),
                 ],
               ),
