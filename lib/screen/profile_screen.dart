@@ -34,9 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _updateFullName() {
-    // هنا هتحط منطق حفظ الاسم الجديد (في الذاكرة المؤقتة، قاعدة البيانات، إلخ.)
     if (fullNameController.text != 'Alaa Elashmawi') {
-      // ... حفظ الاسم الجديد ...
       setState(() {
         isFullNameUpdated = true;
       });
@@ -57,21 +55,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
     setState(() {
-      // عرض مؤشر التحميل 
+      // عرض مؤشر التحميل
     });
 
     await Future.delayed(const Duration(seconds: 2));
-    bool isSaveSuccessful = true; 
+    bool isSaveSuccessful = true;
 
-    setState(() {
-      // إخفاء مؤشر التحميل (لو هتستخدمه)
-    });
+    setState(() {});
 
     if (isSaveSuccessful) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث البروفايل بنجاح!')),
       );
-      // ممكن تعمل navigate لشاشة تانية أو أي إجراء تاني
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -235,7 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _updateProfile, 
+                onPressed: _updateProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF042D46),
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
