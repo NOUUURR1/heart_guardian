@@ -30,8 +30,8 @@ class _SignUpViewState extends State<SignUpView> {
       _showCustomDialog("Passwords do not match", false);
       return;
     }
-
     final url = Uri.parse('http://192.168.105.148:8000/signup');
+
     try {
       final response = await http.post(
         url,
