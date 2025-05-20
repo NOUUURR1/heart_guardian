@@ -1,31 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/login_view.dart';
 import 'package:heart_guardian/screen/signup_view.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatelessWidget {
-  WelcomePage({super.key});
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> _handleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final String? accessToken = googleAuth.accessToken;
-        final String? idToken = googleAuth.idToken;
-
-        print('تم تسجيل الدخول بنجاح: ${googleUser.displayName}');
-      } else {
-        print('تم إلغاء تسجيل الدخول');
-      }
-    } catch (error) {
-      print('حدث خطأ أثناء تسجيل الدخول: $error');
-    }
-  }
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +12,7 @@ class WelcomePage extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFA0D1EF), Color(0xFFFFFFFF)],
             begin: Alignment.topCenter,
@@ -44,8 +23,8 @@ class WelcomePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   "Welcome Back",
                   style: TextStyle(
@@ -104,7 +83,10 @@ class WelcomePage extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   InkWell(
-                    onTap: _handleSignIn,
+                    onTap: () {
+                      // هنا لو هتضيفي تسجيل دخول Google لاحقاً، ممكن ترجعي تضيفيه
+                      print('Login with Google');
+                    },
                     child: SvgPicture.asset(
                       'assets/icons/google.svg',
                       height: 30,
@@ -140,8 +122,7 @@ class WelcomePage extends StatelessWidget {
         width: width ?? 200,
         padding: const EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
-          // ignore: deprecated_member_use
-          color: isFilled ? backgroundColor : backgroundColor.withOpacity(0),
+          color: isFilled ? backgroundColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: borderColor != null ? Border.all(color: borderColor) : null,
         ),
