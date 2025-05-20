@@ -82,12 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Padding(
-          padding: EdgeInsets.only(left: 68, top: 15),
+          padding: EdgeInsets.only(left: 95, top: 10),
           child: Text(
             'My Profile',
             style: TextStyle(
               color: Color(0XFF042D46),
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),

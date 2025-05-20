@@ -8,53 +8,33 @@ class BlogsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              'Blogs :',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF042D46),
+    return FutureBuilder<List<Article>>(
+      future: ArticleService.fetchArticles(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF6BAED6),
+                strokeWidth: 4.0,
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        FutureBuilder<List<Article>>(
-          future: ArticleService.fetchArticles(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF6BAED6),
-                    strokeWidth: 4.0,
-                  ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('خطأ في تحميل المقالات: ${snapshot.error}'),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('لا توجد مقالات حالياً'),
-              );
-            } else {
-              return ArticleListWidget(articles: snapshot.data!);
-            }
-          },
-        ),
-      ],
+          );
+        } else if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('خطأ في تحميل المقالات: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('لا توجد مقالات حالياً'),
+          );
+        } else {
+          return ArticleListWidget(articles: snapshot.data!);
+        }
+      },
     );
   }
 }

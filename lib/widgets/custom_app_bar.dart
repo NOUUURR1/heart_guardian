@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heart_guardian/screen/notification_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -9,10 +10,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       elevation: 0,
-      title: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Center(child: Row(mainAxisSize: MainAxisSize.min)),
-      ),
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.only(right: 250, top: 16),
@@ -28,8 +25,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.notifications_on_outlined, size: 30),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationScreen(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.notifications_on_outlined, size: 30),
               ),
               IconButton(
                 onPressed: () {},
@@ -43,5 +47,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(100.0);
+  Size get preferredSize => const Size.fromHeight(80.0);
 }
