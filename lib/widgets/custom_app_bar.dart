@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/notification_screen.dart';
+import 'package:heart_guardian/screen/settings_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -36,7 +37,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 icon: Icon(Icons.notifications_on_outlined, size: 30),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  );
+                },
                 icon: const Icon(Icons.settings, size: 30),
               ),
             ],
