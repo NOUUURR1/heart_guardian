@@ -1,0 +1,15 @@
+{
+  "settings": "Settings",
+  "account": "Account",
+  "language": "Language",
+  "english": "English",
+  "arabic": "Arabic",
+  "notifications": "Notifications",
+  "dark_mode": "Dark Mode",
+  "support_about": "Support & About",
+  "privacy": "Privacy",
+  "help_support": "Help & Support",
+  "actions": "Actions",
+  "add_account": "Add account",
+  "log_out": "Log out"
+}

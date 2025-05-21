@@ -257,6 +257,10 @@ class _SignUpViewState extends State<SignUpView> {
                             },
                             child: const Text(
                               "Already have an account? Sign in",
+                              style: TextStyle(
+                                color: Color(0xFF848383),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],

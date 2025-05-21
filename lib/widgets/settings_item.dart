@@ -34,7 +34,7 @@ class SettingsItem extends StatelessWidget {
             if (trailing != null)
               trailing!
             else if (title != 'Dark Mode')
-              const Icon(Icons.arrow_forward_ios, color: Color(0XFF042D46)),
+              const Icon(Icons.arrow_forward_ios, color: Color(0xFFA0D1EF)),
           ],
         ),
       ),

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/core/theme_notifier.dart';
+import 'package:heart_guardian/settings/dark_mode_switch_item.dart';
+import 'package:heart_guardian/settings/help_support.dart';
+import 'package:heart_guardian/settings/language_selector.dart';
+import 'package:heart_guardian/settings/privacy_screen.dart';
 import 'package:heart_guardian/widgets/settings_card.dart';
 import 'package:heart_guardian/widgets/settings_item.dart';
 import 'package:heart_guardian/widgets/settings_section_title.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -20,9 +25,9 @@ class SettingsScreen extends StatelessWidget {
           },
         ),
         titleSpacing: 100,
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          'settings'.tr(),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Colors.white,
@@ -42,67 +47,66 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SettingsSectionTitle(title: 'Account'),
-                const SettingsCard(
+                SettingsSectionTitle(title: 'account'.tr()),
+                SettingsCard(
                   children: [
-                    SettingsItem(icon: Icons.person_outline, title: 'Account'),
                     SettingsItem(
-                      icon: Icons.language_outlined,
-                      title: 'Language',
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('English'),
-                          Icon(Icons.arrow_forward_ios, size: 16),
-                        ],
-                      ),
+                      icon: Icons.person_outline,
+                      title: 'account'.tr(),
                     ),
+                    const LanguageSelector(),
+
                     SettingsItem(
                       icon: Icons.notifications_active_outlined,
-                      title: 'Notifications',
+                      title: 'notifications'.tr(),
                     ),
+                    const DarkModeSwitchItem(),
                   ],
                 ),
-                // الكارد الخاص بالدارك مود منفصل عشان نقدر نربط الـ Switch بالـ Provider
-                const SizedBox(height: 12),
-                Consumer<ThemeNotifier>(
-                  builder: (context, themeNotifier, child) {
-                    return SettingsCard(
-                      children: [
-                        SettingsItem(
-                          icon: Icons.brightness_4_outlined,
-                          title: 'Dark Mode',
-                          trailing: Switch(
-                            value: themeNotifier.isDarkMode,
-                            onChanged: (value) {
-                              themeNotifier.toggleTheme();
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 24.0),
-                const SettingsSectionTitle(title: 'Support & About'),
-                const SettingsCard(
+                const SizedBox(height: 10.0),
+                SettingsSectionTitle(title: 'support_about'.tr()),
+                SettingsCard(
                   children: [
-                    SettingsItem(icon: Icons.lock_outline, title: 'Privacy'),
+                    SettingsItem(
+                      icon: Icons.lock_outline,
+                      title: 'privacy'.tr(),
+
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PrivacyScreen(),
+                          ),
+                        );
+                      },
+                    ),
                     SettingsItem(
                       icon: Icons.question_mark_rounded,
-                      title: 'Help & Support',
+                      title: 'help_support'.tr(),
+
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HelpSupportScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 24.0),
-                const SettingsSectionTitle(title: 'Actions'),
-                const SettingsCard(
+                const SizedBox(height: 10.0),
+                SettingsSectionTitle(title: 'actions'.tr()),
+                SettingsCard(
                   children: [
                     SettingsItem(
                       icon: Icons.group_add_outlined,
-                      title: 'Add account',
+                      title: 'add_account'.tr(),
                     ),
-                    SettingsItem(icon: Icons.logout_outlined, title: 'Log out'),
+                    SettingsItem(
+                      icon: Icons.logout_outlined,
+                      title: 'logout'.tr(),
+                    ),
                   ],
                 ),
               ],

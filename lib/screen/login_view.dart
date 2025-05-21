@@ -178,7 +178,10 @@ class _LoginViewState extends State<LoginView> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           "Forgot password?",
-                          style: TextStyle(color: Colors.grey.shade600),
+                          style: TextStyle(
+                            color: Color(0xFF000000),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -220,7 +223,10 @@ class _LoginViewState extends State<LoginView> {
                   },
                   child: const Text(
                     "Don't have an account? Sign up",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Color(0xFF848383),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

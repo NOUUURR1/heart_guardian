@@ -101,7 +101,6 @@ class ArticleListWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
 
-                      // أيقونات العناوين
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
