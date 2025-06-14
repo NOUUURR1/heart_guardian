@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/article.dart';
 
 class ArticleService {
-  static const String apiUrl = 'http://192.168.105.148:5000/api/articles';
+  static const String apiUrl =
+      '';
 
   static Future<List<Article>> fetchArticles() async {
     final response = await http.get(Uri.parse(apiUrl));

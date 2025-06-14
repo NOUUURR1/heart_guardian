@@ -3,7 +3,9 @@ import 'package:heart_guardian/screen/notification_screen.dart';
 import 'package:heart_guardian/screen/settings_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  final int userId;
+
+  const CustomAppBar({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +16,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.only(right: 250, top: 16),
-          child: CircleAvatar(
+          child: const CircleAvatar(
             radius: 40,
             backgroundColor: Colors.white,
-            backgroundImage: const AssetImage("assets/Images/Profil.png"),
+            backgroundImage: AssetImage("assets/Images/Profil.png"),
           ),
         ),
         Padding(
@@ -30,17 +32,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NotificationScreen(),
+                      builder: (context) => const NotificationScreen(),
                     ),
                   );
                 },
-                icon: Icon(Icons.notifications_on_outlined, size: 30),
+                icon: const Icon(Icons.notifications_on_outlined, size: 30),
               ),
               IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(userId: userId),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.settings, size: 30),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/login_view.dart';
 import 'package:heart_guardian/screen/signup_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:heart_guardian/services/google_auth_service.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -83,9 +85,21 @@ class WelcomePage extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   InkWell(
-                    onTap: () {
-                      // هنا لو هتضيفي تسجيل دخول Google لاحقاً، ممكن ترجعي تضيفيه
-                      print('Login with Google');
+                    onTap: () async {
+                      final userCredential =
+                          await GoogleAuthService().signInWithGoogle();
+                      if (userCredential != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginView()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('فشل تسجيل الدخول باستخدام Google'),
+                          ),
+                        );
+                      }
                     },
                     child: SvgPicture.asset(
                       'assets/icons/google.svg',

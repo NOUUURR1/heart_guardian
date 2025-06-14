@@ -1,27 +1,68 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:heart_guardian/screen/home_view.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final int userId;
+  const ProfileScreen({super.key, required this.userId});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController fullNameController = TextEditingController(
-    text: 'Alaa Elashmawi',
-  );
-  bool isFullNameUpdated = false;
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController birthdateController = TextEditingController();
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
   bool _obscurePassword = true;
-  TextEditingController birthdateController = TextEditingController(
-    text: '19/07/2003',
-  );
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfileData();
+  }
+
+  Future<void> fetchProfileData() async {
+    final url = Uri.parse(
+      'http://192.168.105.148:5000/profile/${widget.userId}',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        fullNameController.text = data['full_name'] ?? '';
+        emailController.text = data['email'] ?? '';
+        birthdateController.text = data['birthdate'] ?? '';
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load profile data')),
+      );
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime(2003, 7, 19),
+      initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -33,46 +74,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _updateFullName() {
-    if (fullNameController.text != 'Alaa Elashmawi') {
-      setState(() {
-        isFullNameUpdated = true;
-      });
-    } else {
-      setState(() {
-        isFullNameUpdated = false;
-      });
-    }
-  }
+  Future<void> updateProfile() async {
+    final url = Uri.parse(
+      'http://192.168.105.148:5000/profile/${widget.userId}',
+    );
+    final response = await http.put(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "full_name": fullNameController.text,
+        "birthdate": birthdateController.text,
+        "profile_image_url": _imageFile?.path ?? "",
+      }),
+    );
 
-  void _updateProfile() async {
-    String fullName = fullNameController.text;
-    String _ = birthdateController.text;
-    if (fullName.isEmpty) {
+    if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الاسم الكامل لا يمكن أن يكون فارغًا')),
-      );
-      return;
-    }
-    setState(() {
-      // عرض مؤشر التحميل
-    });
-
-    await Future.delayed(const Duration(seconds: 2));
-    bool isSaveSuccessful = true;
-
-    setState(() {});
-
-    if (isSaveSuccessful) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تحديث البروفايل بنجاح!')),
+        const SnackBar(content: Text('Profile updated successfully!')),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('حدث خطأ أثناء تحديث البروفايل. حاول مرة أخرى.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to update profile')));
     }
   }
 
@@ -98,10 +121,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
-            Navigator.pop(context, 0);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeView(userId: widget.userId),
+              ),
+              (Route<dynamic> route) => false,
+            );
           },
         ),
-        centerTitle: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -111,31 +139,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Center(
               child: Stack(
                 children: <Widget>[
-                  SizedBox(
+                  Container(
                     width: 120,
                     height: 120,
-                    child: Container(
-                      decoration: ShapeDecoration(
-                        shape: CircleBorder(
-                          side: BorderSide(
-                            color: Color(0xFF042D46),
-                            width: 4.0,
-                          ),
-                        ),
+                    decoration: ShapeDecoration(
+                      shape: CircleBorder(
+                        side: BorderSide(color: Color(0xFF042D46), width: 4.0),
                       ),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage('assets/Images/Profil.png'),
-                        backgroundColor: Colors.white,
-                      ),
+                    ),
+                    child: CircleAvatar(
+                      backgroundImage:
+                          _imageFile != null
+                              ? FileImage(_imageFile!)
+                              : const AssetImage('assets/Images/Profil.png')
+                                  as ImageProvider,
+                      backgroundColor: Colors.white,
                     ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: CircleAvatar(
-                      backgroundColor: Color(0xFFB3D9EF),
-                      radius: 20,
-                      child: Icon(Icons.camera_alt, color: Colors.white),
+                    child: InkWell(
+                      onTap: _pickImage,
+                      child: const CircleAvatar(
+                        backgroundColor: Color(0xFFB3D9EF),
+                        radius: 20,
+                        child: Icon(Icons.camera_alt, color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -149,15 +179,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 10.0),
             TextField(
               controller: fullNameController,
-              onSubmitted: (_) => _updateFullName(),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                ),
-                hintText: 'Alaa Elashmawi',
-                suffixIcon: Icon(
-                  Icons.check,
-                  color: isFullNameUpdated ? Color(0XFF042D46) : Colors.grey,
                 ),
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
@@ -167,11 +191,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Text('Email', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 10.0),
             TextField(
+              controller: emailController,
+              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                hintText: 'alaa@gmail.com',
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
               ),
@@ -183,12 +208,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 10.0),
             TextField(
+              controller: passwordController,
               obscureText: _obscurePassword,
+              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                hintText: '**********',
+                filled: true,
+                fillColor: const Color(0xFFE0F2F7),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -199,8 +227,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
-                filled: true,
-                fillColor: const Color(0xFFE0F2F7),
               ),
             ),
             const SizedBox(height: 20.0),
@@ -216,21 +242,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                hintText: '19/07/2003',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.arrow_drop_down),
-                  onPressed: () => _selectDate(context),
-                ),
                 filled: true,
                 fillColor: const Color(0xFFE0F2F7),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () => _selectDate(context),
+                ),
               ),
-              onTap: () => _selectDate(context),
             ),
             const SizedBox(height: 40.0),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _updateProfile,
+                onPressed: updateProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF042D46),
                   padding: const EdgeInsets.symmetric(vertical: 15.0),

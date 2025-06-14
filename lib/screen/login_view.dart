@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_view.dart';
 import 'signup_view.dart';
 
@@ -18,8 +19,7 @@ class _LoginViewState extends State<LoginView> {
   final passwordController = TextEditingController();
 
   Future<void> loginUser() async {
-    final url = Uri.parse('http://192.168.105.148:8000/login');
-
+    final url = Uri.parse('https://web-production-6fe6.up.railway.app/login');
     try {
       final response = await http.post(
         url,
@@ -32,6 +32,10 @@ class _LoginViewState extends State<LoginView> {
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {
+        final prefs = await SharedPreferences.getInstance();
+        final int userId = responseData['user_id'];
+        await prefs.setInt('user_id', userId);
+
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -84,10 +88,11 @@ class _LoginViewState extends State<LoginView> {
 
         await Future.delayed(const Duration(seconds: 2));
         if (!mounted) return;
+
         Navigator.of(context)
           ..pop()
           ..pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeView()),
+            MaterialPageRoute(builder: (context) => HomeView(userId: userId)),
           );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

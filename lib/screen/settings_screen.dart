@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/core/theme_notifier.dart';
+import 'package:heart_guardian/screen/profile_screen.dart';
+import 'package:heart_guardian/screen/splash_screen.dart';
 import 'package:heart_guardian/settings/dark_mode_switch_item.dart';
 import 'package:heart_guardian/settings/help_support.dart';
 import 'package:heart_guardian/settings/language_selector.dart';
@@ -11,7 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  final int userId;
+  const SettingsScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +56,16 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.person_outline,
                       title: 'account'.tr(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(userId: userId),
+                          ),
+                        );
+                      },
                     ),
                     const LanguageSelector(),
-
                     SettingsItem(
                       icon: Icons.notifications_active_outlined,
                       title: 'notifications'.tr(),
@@ -70,7 +80,6 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.lock_outline,
                       title: 'privacy'.tr(),
-
                       onTap: () {
                         Navigator.push(
                           context,
@@ -83,7 +92,6 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.question_mark_rounded,
                       title: 'help_support'.tr(),
-
                       onTap: () {
                         Navigator.push(
                           context,
@@ -106,6 +114,15 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.logout_outlined,
                       title: 'logout'.tr(),
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SplashScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
                     ),
                   ],
                 ),

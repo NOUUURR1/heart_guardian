@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:heart_guardian/screen/home_view.dart';
+import 'package:heart_guardian/screen/profile_screen.dart';
 import 'package:http/http.dart' as http;
-import 'home_view.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -15,13 +16,15 @@ class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
   Future<void> _signUp() async {
+    final String fullName = _fullNameController.text.trim();
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
     final String confirmPassword = _confirmPasswordController.text.trim();
@@ -30,28 +33,34 @@ class _SignUpViewState extends State<SignUpView> {
       _showCustomDialog("Passwords do not match", false);
       return;
     }
-    final url = Uri.parse('http://192.168.105.148:8000/signup');
+
+    final url = Uri.parse('https://web-production-6fe6.up.railway.app/signup');
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+        body: json.encode({
+          'full_name': fullName,
+          'email': email,
+          'password': password,
+        }),
       );
 
       final data = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        _showCustomDialog("Account created successfully.", true);
+        int userId = data['user_id'];
+        _showCustomDialog("Account created successfully.", true, userId);
       } else {
-        _showCustomDialog(data['message'], false);
+        _showCustomDialog(data['message'] ?? "Signup failed", false);
       }
     } catch (e) {
       _showCustomDialog("Something went wrong. Try again later.", false);
     }
   }
 
-  void _showCustomDialog(String message, bool success) {
+  void _showCustomDialog(String message, bool success, [int? userId]) {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
@@ -59,12 +68,11 @@ class _SignUpViewState extends State<SignUpView> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pop(); // Close the dialog
-          if (success) {
-            if (!mounted) return;
+          Navigator.of(context).pop();
+          if (success && userId != null) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const HomeView()),
+              MaterialPageRoute(builder: (context) => HomeView(userId: userId)),
             );
           }
         });
@@ -85,7 +93,11 @@ class _SignUpViewState extends State<SignUpView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle, color: Colors.white, size: 60),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.white,
+                      size: 60,
+                    ),
                     const SizedBox(height: 20),
                     Text(
                       message,
@@ -94,7 +106,6 @@ class _SignUpViewState extends State<SignUpView> {
                         fontSize: 20,
                         color: Color(0xFF042D46),
                         fontWeight: FontWeight.bold,
-
                         decoration: TextDecoration.none,
                       ),
                     ),
@@ -152,7 +163,7 @@ class _SignUpViewState extends State<SignUpView> {
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: _nameController,
+                            controller: _fullNameController,
                             decoration: InputDecoration(
                               labelText: "Full Name",
                               prefixIcon: const Icon(Icons.person),

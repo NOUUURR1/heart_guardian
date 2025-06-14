@@ -4,11 +4,10 @@ import 'package:heart_guardian/screen/profile_screen.dart';
 import 'package:heart_guardian/widgets/custom_app_bar.dart';
 import 'package:heart_guardian/widgets/custom_navigation_bar.dart';
 import 'package:heart_guardian/widgets/home_screen_content.dart';
-import 'login_view.dart';
-import 'signup_view.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  final int userId;
+  const HomeView({super.key, required this.userId});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -17,11 +16,13 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _pageIndex = 0;
 
-  final List<Widget> _widgetOptions = [
-    HomeScreenContent(),
-    HeartView(),
-    const SizedBox(),
-  ];
+  late final List<Widget> _widgetOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = [HomeScreenContent(), HeartView(), const SizedBox()];
+  }
 
   void _onNavigationItemTapped(int index) {
     setState(() {
@@ -30,7 +31,9 @@ class _HomeViewState extends State<HomeView> {
     if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(userId: widget.userId),
+        ),
       ).then((value) {
         if (value == 0) {
           setState(() {
@@ -45,7 +48,7 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(),
+      appBar: CustomAppBar(userId: widget.userId),
       body: Center(child: _widgetOptions.elementAt(_pageIndex)),
       bottomNavigationBar: CustomNavigationBar(
         currentIndex: _pageIndex,

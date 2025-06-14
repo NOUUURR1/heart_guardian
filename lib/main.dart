@@ -10,12 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
+      startLocale: Locale('en'),
       child: ChangeNotifierProvider(
         create: (_) => ThemeNotifier(),
         child: const MyApp(),
@@ -26,7 +26,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeNotifier>(
@@ -34,18 +33,9 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Heart Guardian',
-          theme: ThemeData(
-            brightness: Brightness.light,
-            fontFamily: 'Poppins',
-            primarySwatch: Colors.blue,
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            fontFamily: 'Poppins',
-            primarySwatch: Colors.blue,
-          ),
-          themeMode:
-              themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          theme: themeNotifier.lightTheme,
+          darkTheme: themeNotifier.darkTheme,
+          themeMode: themeNotifier.currentTheme,
           locale: context.locale,
           supportedLocales: context.supportedLocales,
           localizationsDelegates: context.localizationDelegates,
