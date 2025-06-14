@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:heart_guardian/widgets/forgot%20_password.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_view.dart';
@@ -181,14 +182,26 @@ class _LoginViewState extends State<LoginView> {
                       const SizedBox(height: 10),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Text(
-                          "Forgot password?",
-                          style: TextStyle(
-                            color: Color(0xFF000000),
-                            fontWeight: FontWeight.bold,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => const ForgotPasswordScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Forgot password?",
+                            style: TextStyle(
+                              color: Color(0xFF000000),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
                       Container(
                         width: double.infinity,
