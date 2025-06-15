@@ -8,10 +8,8 @@ class ArticleListWidget extends StatelessWidget {
 
   const ArticleListWidget({super.key, required this.articles});
 
-  // دالة لتعديل رابط يوتيوب عشان يكون صالح للفتح
   String fixYouTubeUrl(String url) {
     if (url.contains("youtube.com/embed/")) {
-      // نحول رابط embed إلى رابط مشاهدة عادي
       final videoId = url.split('/embed/').last;
       return 'https://www.youtube.com/watch?v=$videoId';
     }

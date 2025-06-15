@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/article.dart';
 
 class ArticleService {
-  static const String apiUrl =
-      '';
+  static String apiUrl =
+      'https://web-production-6fe6.up.railway.app/api/articles';
 
   static Future<List<Article>> fetchArticles() async {
     final response = await http.get(Uri.parse(apiUrl));

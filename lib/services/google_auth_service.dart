@@ -10,12 +10,15 @@ class GoogleAuthService {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      if (googleUser == null) {
-        return null;
-      }
+      if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        print(' Missing tokens');
+        return null;
+      }
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -26,21 +29,26 @@ class GoogleAuthService {
         credential,
       );
       final user = userCredential.user;
+
       if (user != null) {
         final ref = _database.ref().child('users').child(user.uid);
 
-        await ref.set({
-          'uid': user.uid,
-          'name': user.displayName ?? '',
-          'email': user.email ?? '',
-          'photoUrl': user.photoURL ?? '',
-          'provider': 'google',
-        });
+        try {
+          await ref.set({
+            'uid': user.uid,
+            'name': user.displayName ?? '',
+            'email': user.email ?? '',
+            'photoUrl': user.photoURL ?? '',
+            'provider': 'google',
+          });
+        } catch (dbError) {
+          print(' خطأ في كتابة البيانات في قاعدة البيانات: $dbError');
+        }
       }
 
       return user;
     } catch (e) {
-      print('خطأ في تسجيل دخول Google: $e');
+      print(' خطأ في تسجيل دخول Google: $e');
       return null;
     }
   }

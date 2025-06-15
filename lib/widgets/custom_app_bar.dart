@@ -36,7 +36,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.notifications_on_outlined, size: 30),
+                icon: const Icon(
+                  Icons.notifications_on_outlined,
+                  size: 30,
+                  color: Color(0XFF000000),
+                ),
               ),
               IconButton(
                 onPressed: () {
@@ -47,7 +51,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.settings, size: 30),
+                icon: const Icon(
+                  Icons.settings,
+                  size: 30,
+                  color: Color(0XFF000000),
+                ),
               ),
             ],
           ),

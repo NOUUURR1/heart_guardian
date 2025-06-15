@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> fetchProfileData() async {
     final url = Uri.parse(
-      'http://192.168.105.148:5000/profile/${widget.userId}',
+      'https://web-production-6fe6.up.railway.app/profile/{user_id}',
     );
     final response = await http.get(url);
 
@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> updateProfile() async {
     final url = Uri.parse(
-      'http://192.168.105.148:5000/profile/${widget.userId}',
+      'https://web-production-6fe6.up.railway.app/profile/{user_id}',
     );
     final response = await http.put(
       url,
