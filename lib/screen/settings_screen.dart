@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/core/theme_notifier.dart';
+import 'package:heart_guardian/screen/notification_screen.dart';
 import 'package:heart_guardian/screen/profile_screen.dart';
 import 'package:heart_guardian/screen/splash_screen.dart';
 import 'package:heart_guardian/settings/dark_mode_switch_item.dart';
@@ -69,7 +70,16 @@ class SettingsScreen extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.notifications_active_outlined,
                       title: 'notifications'.tr(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationScreen(),
+                          ),
+                        );
+                      },
                     ),
+
                     const DarkModeSwitchItem(),
                   ],
                 ),

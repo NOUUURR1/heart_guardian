@@ -41,6 +41,7 @@ class HelpSupportScreen extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
+            fontSize: 18,
             color: Colors.white,
           ),
         ),

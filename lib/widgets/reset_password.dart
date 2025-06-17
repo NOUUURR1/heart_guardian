@@ -30,7 +30,6 @@ class _ResetPasswordState extends State<ResetPassword> {
       return;
     }
 
-    // TODO: Send new password to backend
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Password has been reset successfully')),
     );
@@ -59,17 +58,18 @@ class _ResetPasswordState extends State<ResetPassword> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 25),
             const Text(
               'Enter your new password below',
               style: TextStyle(
-                fontSize: 22,
+                fontFamily: 'Agbalumo',
+                fontSize: 21,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF042D46),
-                fontFamily: 'Poppins',
+                color: Color(0xFF656363),
               ),
             ),
             const SizedBox(height: 30),
@@ -79,8 +79,11 @@ class _ResetPasswordState extends State<ResetPassword> {
               decoration: InputDecoration(
                 labelText: 'New Password',
                 filled: true,
-                fillColor: const Color.fromARGB(255, 255, 255, 255),
-                labelStyle: const TextStyle(color: Color(0xFF042D46)),
+                fillColor: Color.fromARGB(255, 255, 255, 255),
+                labelStyle: TextStyle(
+                  color: Color(0xFFA0D1EF),
+                  fontFamily: 'Agbalumo',
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -95,31 +98,35 @@ class _ResetPasswordState extends State<ResetPassword> {
                 labelText: 'Confirm Password',
                 filled: true,
                 fillColor: const Color.fromARGB(255, 255, 255, 255),
-                labelStyle: const TextStyle(color: Color(0xFF042D46)),
+                labelStyle: TextStyle(
+                  color: Color(0xFFA0D1EF),
+                  fontFamily: 'Agbalumo',
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               style: const TextStyle(color: Color(0xFF042D46)),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 50),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _submitNewPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 159, 211, 243),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  backgroundColor: Color(0xFF042D46),
+                  padding: EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  elevation: 9,
                 ),
                 child: const Text(
                   'Reset Password',
                   style: TextStyle(
+                    fontFamily: 'Agbalumo',
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    fontFamily: 'Poppins',
+                    fontSize: 22,
                     color: Colors.white,
                   ),
                 ),

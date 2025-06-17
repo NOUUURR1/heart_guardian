@@ -20,7 +20,7 @@ class PrivacyScreen extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
-              fontSize: 20,
+              fontSize: 18,
             ),
           ),
         ),
@@ -49,11 +49,13 @@ class PrivacyScreen extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  'We value your privacy and ensure your personal data is protected. '
-                  'This application collects only necessary information to provide the best experience. '
-                  'All sensitive data, such as your location or heart rate, is securely stored and not shared with third parties.',
+                  'Your personal data is safe with us.\n'
+                  'We only collect what’s needed to improve your experience.\n'
+                  'We never share it with others.',
+                  textAlign: TextAlign.start,
+
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 17,
                     color: Color(0xFF0F657C),
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Poppins',
@@ -74,7 +76,6 @@ class PrivacyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Card لحقوق المستخدم
             Card(
               color: Colors.white,
               elevation: 10,
@@ -85,11 +86,12 @@ class PrivacyScreen extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  '* You can request access to your data.\n'
-                  '* You can request deletion of your account and all related data.\n'
-                  '* You can optout of notifications or tracking features.',
+                  'You can request access to your data.\n'
+                  'You can delete your account and related data.\n'
+                  'You can turn off notifications or tracking features.',
+                  textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 17,
                     color: Color(0xFF0F657C),
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Poppins',
