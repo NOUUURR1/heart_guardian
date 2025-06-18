@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:heart_guardian/screen/login_view.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ResetPassword extends StatefulWidget {
-  const ResetPassword({super.key});
+  final String email;
+  final String resetToken;
+  const ResetPassword({
+    super.key,
+    required this.email,
+    required this.resetToken,
+  });
 
   @override
   State<ResetPassword> createState() => _ResetPasswordState();
@@ -12,9 +21,11 @@ class _ResetPasswordState extends State<ResetPassword> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  void _submitNewPassword() {
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+  bool _isLoading = false;
+
+  Future<void> _submitNewPassword() async {
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
     if (password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -30,11 +41,41 @@ class _ResetPasswordState extends State<ResetPassword> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password has been reset successfully')),
+    setState(() => _isLoading = true);
+
+    final url = Uri.parse(
+      'https://web-production-6fe6.up.railway.app/api/v1/password/reset',
     );
 
-    Navigator.popUntil(context, (route) => route.isFirst);
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        "email": widget.email,
+        "newPassword": password,
+        "confirmNewPassword": confirmPassword,
+        "resetToken": widget.resetToken,
+      }),
+    );
+
+    setState(() => _isLoading = false);
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset successfully')),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginView()),
+        (route) => false,
+      );
+    } else {
+      final error = json.decode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error['message'] ?? 'Something went wrong')),
+      );
+    }
   }
 
   @override
@@ -79,8 +120,8 @@ class _ResetPasswordState extends State<ResetPassword> {
               decoration: InputDecoration(
                 labelText: 'New Password',
                 filled: true,
-                fillColor: Color.fromARGB(255, 255, 255, 255),
-                labelStyle: TextStyle(
+                fillColor: Colors.white,
+                labelStyle: const TextStyle(
                   color: Color(0xFFA0D1EF),
                   fontFamily: 'Agbalumo',
                 ),
@@ -97,8 +138,8 @@ class _ResetPasswordState extends State<ResetPassword> {
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 filled: true,
-                fillColor: const Color.fromARGB(255, 255, 255, 255),
-                labelStyle: TextStyle(
+                fillColor: Colors.white,
+                labelStyle: const TextStyle(
                   color: Color(0xFFA0D1EF),
                   fontFamily: 'Agbalumo',
                 ),
@@ -112,24 +153,27 @@ class _ResetPasswordState extends State<ResetPassword> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _submitNewPassword,
+                onPressed: _isLoading ? null : _submitNewPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF042D46),
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  backgroundColor: const Color(0xFF042D46),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 9,
                 ),
-                child: const Text(
-                  'Reset Password',
-                  style: TextStyle(
-                    fontFamily: 'Agbalumo',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: Colors.white,
-                  ),
-                ),
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                          'Reset Password',
+                          style: TextStyle(
+                            fontFamily: 'Agbalumo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
               ),
             ),
           ],

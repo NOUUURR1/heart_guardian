@@ -35,7 +35,10 @@ class _LoginViewState extends State<LoginView> {
       if (response.statusCode == 200) {
         final prefs = await SharedPreferences.getInstance();
         final int userId = responseData['user_id'];
+        final String accessToken = responseData['access_token'] ?? '';
+
         await prefs.setInt('user_id', userId);
+        await prefs.setString('access_token', accessToken);
 
         showDialog(
           context: context,
@@ -201,7 +204,6 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 20),
                       Container(
                         width: double.infinity,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/notification_screen.dart';
 import 'package:heart_guardian/screen/settings_screen.dart';
+import 'package:heart_guardian/screen/profile_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int userId;
@@ -16,10 +17,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.only(right: 250, top: 16),
-          child: const CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.white,
-            backgroundImage: AssetImage("assets/Images/Profil.png"),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(userId: userId),
+                ),
+              );
+            },
+            child: const CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.white,
+              backgroundImage: AssetImage("assets/Images/Profil.png"),
+            ),
           ),
         ),
         Padding(

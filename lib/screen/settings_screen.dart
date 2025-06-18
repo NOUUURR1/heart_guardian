@@ -118,10 +118,6 @@ class SettingsScreen extends StatelessWidget {
                 SettingsCard(
                   children: [
                     SettingsItem(
-                      icon: Icons.group_add_outlined,
-                      title: 'add_account'.tr(),
-                    ),
-                    SettingsItem(
                       icon: Icons.logout_outlined,
                       title: 'logout'.tr(),
                       onTap: () {

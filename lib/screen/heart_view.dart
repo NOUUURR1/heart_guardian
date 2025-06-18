@@ -79,10 +79,10 @@ class _HeartViewState extends State<HeartView>
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 250),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 200),
       child: Column(
         children: [
-          AnimatedTitle(text: '❤️ Heart Rate ❤️', animation: _heartAnimation),
+          AnimatedTitle(text: '🫀 Heart Rate 🫀', animation: _heartAnimation),
           CustomLineChart(
             data: heartRates,
             lineColor: Colors.redAccent,
@@ -94,6 +94,17 @@ class _HeartViewState extends State<HeartView>
             data: spo2Levels,
             lineColor: Colors.blue,
             timeLabels: timeLabels,
+          ),
+          const SizedBox(height: 30),
+          Text(
+            'Your heart rate and oxygen is updated live while using the sensor',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Agbalumo',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF656363),
+            ),
           ),
         ],
       ),
