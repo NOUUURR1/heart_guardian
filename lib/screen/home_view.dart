@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:heart_guardian/screen/heart_view.dart';
 import 'package:heart_guardian/screen/profile_screen.dart';
+import 'package:heart_guardian/screen/open_camera_screen.dart';
 import 'package:heart_guardian/widgets/custom_app_bar.dart';
 import 'package:heart_guardian/widgets/custom_navigation_bar.dart';
 import 'package:heart_guardian/widgets/home_screen_content.dart';
 
 class HomeView extends StatefulWidget {
   final int userId;
+
   const HomeView({super.key, required this.userId});
 
   @override
@@ -21,14 +23,31 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    _widgetOptions = [HomeScreenContent(), HeartView(), const SizedBox()];
+    _widgetOptions = [
+      HomeScreenContent(),
+      HeartView(),
+      const SizedBox(), // كاميرا
+      const SizedBox(), // بروفايل
+    ];
   }
 
   void _onNavigationItemTapped(int index) {
     setState(() {
       _pageIndex = index;
     });
+
     if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => OpenCameraScreen(
+                cameraIp: '192.168.1.11',
+                userId: widget.userId, // ✅ التعديل هنا
+              ),
+        ),
+      );
+    } else if (index == 3) {
       Navigator.push(
         context,
         MaterialPageRoute(

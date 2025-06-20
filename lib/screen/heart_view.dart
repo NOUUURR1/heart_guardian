@@ -52,8 +52,8 @@ class _HeartViewState extends State<HeartView>
     _database.child('sensorData').onValue.listen((event) {
       final data = event.snapshot.value as Map?;
       if (data != null) {
-        final bpm = (data['BPM'] ?? 0).toDouble();
-        final spo2 = (data['SpO2'] ?? 0).toDouble();
+        final bpm = (data['bpm'] ?? 0).toDouble();
+        final spo2 = (data['spo2'] ?? 0).toDouble();
 
         final now = DateTime.now();
         final formattedTime =
