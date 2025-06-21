@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:heart_guardian/screen/home_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heart_guardian/screen/home_view.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int userId;
@@ -19,90 +18,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController birthdateController = TextEditingController();
-
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
   bool _obscurePassword = true;
 
-  String? _accessToken;
+  final String baseUrl =
+      "https://fac10a1c-0070-4ad0-85b0-a75e62686353-00-1gizyhv0koir5.picard.replit.dev";
 
   @override
   void initState() {
     super.initState();
-    _loadAccessTokenAndFetchProfile();
+    getProfileData();
   }
 
-  @override
-  void dispose() {
-    fullNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    birthdateController.dispose();
-    super.dispose();
-  }
+  Future<void> getProfileData() async {
+    final url = Uri.parse('$baseUrl/profile/${widget.userId}');
+    final response = await http.get(url);
 
-  Future<void> _loadAccessTokenAndFetchProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _accessToken = prefs.getString('access_token');
-    });
-
-    if (_accessToken != null) {
-      await fetchProfileData();
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        fullNameController.text = data['full_name'] ?? '';
+        emailController.text = data['email'] ?? '';
+        passwordController.text = data['password'] ?? '';
+        birthdateController.text = data['birthdate'] ?? '';
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Access token not found. Please log in again.'),
-        ),
+        SnackBar(content: Text('فشل تحميل البيانات: ${response.body}')),
       );
     }
   }
 
-  Future<void> fetchProfileData() async {
-    if (_accessToken == null) return;
-
-    final url = Uri.parse(
-      'https://web-production-6fe6.up.railway.app/profile/${widget.userId}',
+  Future<void> updateProfile() async {
+    final url = Uri.parse('$baseUrl/profile/${widget.userId}');
+    final response = await http.put(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "full_name": fullNameController.text,
+        "email": emailController.text,
+        "password": passwordController.text,
+        "birthdate": birthdateController.text,
+        "profile_image_url": "", // سيتم التعامل مع الصور لاحقًا
+      }),
     );
 
-    print("DEBUG: Fetching profile from URL: $url");
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          // ****** تم إزالة "Content-Type": "application/json" هنا ******
-          "Authorization": "Bearer $_accessToken",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          fullNameController.text = data['full_name'] ?? '';
-          emailController.text = data['email'] ?? '';
-          birthdateController.text = data['birthdate'] ?? '';
-        });
-      } else if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unauthorized. Please log in again.')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to load profile data: ${response.statusCode}',
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An error occurred while fetching profile data'),
-        ),
-      );
-      print('Error fetching profile data: $e');
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('تم تحديث البيانات بنجاح')));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('فشل التحديث: ${response.body}')));
     }
   }
 
@@ -120,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -129,60 +98,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         birthdateController.text =
             "${picked.day}/${picked.month}/${picked.year}";
       });
-    }
-  }
-
-  Future<void> updateProfile() async {
-    if (_accessToken == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Access token not found. Please log in again.'),
-        ),
-      );
-      return;
-    }
-    final url = Uri.parse(
-      'https://web-production-6fe6.up.railway.app/profile/${widget.userId}',
-    );
-
-    String profileImageUrlToSend = "";
-
-    try {
-      final response = await http.put(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $_accessToken",
-        },
-        body: jsonEncode({
-          "full_name": fullNameController.text,
-          "birthdate": birthdateController.text,
-          "profile_image_url": profileImageUrlToSend,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
-        );
-      } else if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unauthorized. Please log in again.')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update profile: ${response.statusCode}'),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An error occurred while updating profile'),
-        ),
-      );
-      print('Error updating profile: $e');
     }
   }
 
@@ -229,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     width: 120,
                     height: 120,
-                    decoration: const ShapeDecoration(
+                    decoration: ShapeDecoration(
                       shape: CircleBorder(
                         side: BorderSide(color: Color(0xFF042D46), width: 4.0),
                       ),
@@ -279,7 +194,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 10.0),
             TextField(
               controller: emailController,
-              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -297,7 +211,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextField(
               controller: passwordController,
               obscureText: _obscurePassword,
-              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
