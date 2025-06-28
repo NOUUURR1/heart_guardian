@@ -9,7 +9,8 @@ class HeartMonitorService {
       final value = event.snapshot.value;
       if (value != null) {
         final bpm = int.tryParse(value.toString());
-        if (bpm != null && (bpm < 60 || bpm > 120)) {
+        if (bpm != null && (bpm < 70 || bpm > 110)) {
+          print(' معدل ضربات القلب خارج النطاق: $bpm');
           NotificationService.showHeartRateAlert(bpm);
         }
       }

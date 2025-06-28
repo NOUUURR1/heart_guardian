@@ -64,13 +64,16 @@ class _SignUpViewState extends State<SignUpView> {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
+      // ignore: deprecated_member_use
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         Future.delayed(const Duration(seconds: 2), () {
+          // ignore: use_build_context_synchronously
           Navigator.of(context).pop();
           if (success && userId != null) {
             Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
               context,
               MaterialPageRoute(builder: (context) => HomeView(userId: userId)),
             );
@@ -86,6 +89,7 @@ class _SignUpViewState extends State<SignUpView> {
                 padding: const EdgeInsets.all(25),
                 margin: const EdgeInsets.symmetric(horizontal: 40),
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(color: const Color(0xFF042D46), width: 5),

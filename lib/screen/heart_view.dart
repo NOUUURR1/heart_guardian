@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:heart_guardian/widgets/custom_line_chart.dart';
 import 'package:heart_guardian/widgets/animated_title.dart';
+import 'dart:async';
 
 class HeartView extends StatefulWidget {
   const HeartView({super.key});
@@ -20,6 +21,8 @@ class _HeartViewState extends State<HeartView>
   late AnimationController _controller;
   late Animation<double> _heartAnimation;
   late Animation<double> _oxygenAnimation;
+
+  StreamSubscription<DatabaseEvent>? _sensorSubscription;
 
   @override
   void initState() {
@@ -45,20 +48,25 @@ class _HeartViewState extends State<HeartView>
   @override
   void dispose() {
     _controller.dispose();
+    _sensorSubscription?.cancel(); 
     super.dispose();
   }
 
   void listenToLiveData() {
-    _database.child('sensorData').onValue.listen((event) {
+    _sensorSubscription = _database.child('sensorData').onValue.listen((event) {
       final data = event.snapshot.value as Map?;
       if (data != null) {
-        final bpm = (data['bpm'] ?? 0).toDouble();
-        final spo2 = (data['spo2'] ?? 0).toDouble();
+        final bpmRaw = data['bpm'];
+        final spo2Raw = data['spo2'];
+
+        final bpm = double.tryParse(bpmRaw.toString()) ?? 0.0;
+        final spo2 = double.tryParse(spo2Raw.toString()) ?? 0.0;
 
         final now = DateTime.now();
         final formattedTime =
             "${now.hour}:${now.minute.toString().padLeft(2, '0')}";
 
+        if (!mounted) return;
         setState(() {
           heartRates.add(bpm);
           spo2Levels.add(spo2);
