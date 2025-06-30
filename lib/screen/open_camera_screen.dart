@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:heart_guardian/screen/home_view.dart';
+import 'package:heart_guardian/screen/notification_screen.dart';
 
 class OpenCameraScreen extends StatefulWidget {
   final String cameraIp;
@@ -23,6 +24,16 @@ class _OpenCameraScreenState extends State<OpenCameraScreen> {
   late final WebViewController _settingsController;
   Uint8List? _imageBytes;
   Timer? _timer;
+  bool fromNotification = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    setState(() {
+      fromNotification = args?['fromNotification'] ?? false;
+    });
+  }
 
   @override
   void initState() {
@@ -67,12 +78,21 @@ class _OpenCameraScreenState extends State<OpenCameraScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeView(userId: widget.userId),
-              ),
-            );
+            if (fromNotification) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationScreen(),
+                ),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeView(userId: widget.userId),
+                ),
+              );
+            }
           },
         ),
         title: const Text(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:heart_guardian/widgets/custom_line_chart.dart';
 import 'package:heart_guardian/widgets/animated_title.dart';
-import 'dart:async';
 
 class HeartView extends StatefulWidget {
   const HeartView({super.key});
@@ -25,6 +24,7 @@ class _HeartViewState extends State<HeartView>
   late AnimationController _controller;
   late Animation<double> _heartAnimation;
   late Animation<double> _oxygenAnimation;
+  late StreamSubscription<DatabaseEvent> _subscription;
 
   @override
   void initState() {
@@ -66,27 +66,21 @@ class _HeartViewState extends State<HeartView>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void listenToLiveData() {
-    _database.child('sensorData').onValue.listen((event) {
+  void _listenToLiveData() {
+    _subscription = _database.child('sensorData').onValue.listen((event) {
       final data = event.snapshot.value as Map?;
-      if (data != null) {
-        final bpm = (data['bpm'] ?? 0).toDouble();
-        final spo2 = (data['spo2'] ?? 0).toDouble();
+      if (data == null || !mounted) return;
 
-        final now = DateTime.now();
-        final formattedTime =
-            "${now.hour}:${now.minute.toString().padLeft(2, '0')}";
+      final bpm = (data['bpm'] ?? 0).toDouble();
+      final spo2 = (data['spo2'] ?? 0).toDouble();
+      final now = DateTime.now();
+      final formattedTime =
+          "${now.hour}:${now.minute.toString().padLeft(2, '0')}";
 
-        setState(() {
-          heartRates.add(bpm);
-          spo2Levels.add(spo2);
-          timeLabels.add(formattedTime);
+      setState(() {
+        heartRates.add(bpm);
+        spo2Levels.add(spo2);
+        timeLabels.add(formattedTime);
 
         if (heartRates.length > 20) {
           heartRates.removeAt(0);

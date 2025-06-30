@@ -36,6 +36,9 @@ class NotificationItem extends StatelessWidget {
                     cameraIp: '192.168.1.11',
                     userId: 0,
                   ),
+              settings: const RouteSettings(
+                arguments: {'fromNotification': true},
+              ),
             ),
           );
         } else if (title == 'Location Alert' || title.contains('Location')) {
