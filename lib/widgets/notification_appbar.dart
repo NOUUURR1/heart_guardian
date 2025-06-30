@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-class NotificationAppBar extends StatelessWidget implements PreferredSizeWidget {
+class NotificationAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const NotificationAppBar({super.key});
 
   @override

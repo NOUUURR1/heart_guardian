@@ -60,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         "email": emailController.text,
         "password": passwordController.text,
         "birthdate": birthdateController.text,
-        "profile_image_url": "", // سيتم التعامل مع الصور لاحقًا
+        "profile_image_url": "", 
       }),
     );
 

@@ -1,4 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:heart_guardian/main.dart'; // navigatorKey
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -12,7 +15,12 @@ class NotificationService {
       android: androidSettings,
     );
 
-    await _plugin.initialize(initSettings);
+    await _plugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        navigatorKey.currentState?.pushNamed('/notificationScreen');
+      },
+    );
   }
 
   static Future<void> showHeartRateAlert(int bpm) async {
@@ -29,11 +37,29 @@ class NotificationService {
       android: androidDetails,
     );
 
+    final String title = 'Heart Rate Alert'; // 👈 توحيد العنوان
+
     await _plugin.show(
       0,
-      '⚠️ حالة طارئة',
-      'معدل ضربات القلب غير طبيعي: $bpm نبضة/دقيقة',
+      title,
+      'Heart rate is abnormal: $bpm bpm',
       platformDetails,
     );
+
+    // حفظ الإشعار في SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final notificationsString = prefs.getString('notifications') ?? '[]';
+    final notifications = json.decode(notificationsString) as List;
+
+    final newNotification = {
+      'title': title,
+      'subtitle': 'Heart rate is abnormal: $bpm bpm',
+      'time': DateTime.now().toIso8601String(),
+    };
+
+    notifications.insert(0, newNotification);
+    await prefs.setString('notifications', json.encode(notifications));
+
+    await prefs.setBool('hasNotifications', true);
   }
 }

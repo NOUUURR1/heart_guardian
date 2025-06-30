@@ -26,8 +26,8 @@ class _HomeViewState extends State<HomeView> {
     _widgetOptions = [
       HomeScreenContent(),
       HeartView(),
-      const SizedBox(), // كاميرا
-      const SizedBox(), // بروفايل
+      const SizedBox(), 
+      const SizedBox(), 
     ];
   }
 
@@ -43,7 +43,7 @@ class _HomeViewState extends State<HomeView> {
           builder:
               (context) => OpenCameraScreen(
                 cameraIp: '192.168.1.11',
-                userId: widget.userId, // ✅ التعديل هنا
+                userId: widget.userId, 
               ),
         ),
       );

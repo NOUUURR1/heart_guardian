@@ -27,13 +27,11 @@ class _OpenCameraScreenState extends State<OpenCameraScreen> {
   @override
   void initState() {
     super.initState();
-
     _settingsController =
         WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..enableZoom(true)
           ..loadRequest(Uri.parse('http://${widget.cameraIp}'));
-
     _timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       _fetchFrame();
     });
@@ -45,12 +43,13 @@ class _OpenCameraScreenState extends State<OpenCameraScreen> {
         Uri.parse('http://${widget.cameraIp}/capture'),
       );
       if (response.statusCode == 200) {
+        if (!mounted) return;
         setState(() {
           _imageBytes = response.bodyBytes;
         });
       }
     } catch (e) {
-      // تجاهل الخطأ
+      if (!mounted) return;
     }
   }
 
@@ -92,9 +91,7 @@ class _OpenCameraScreenState extends State<OpenCameraScreen> {
             flex: 3,
             child: WebViewWidget(controller: _settingsController),
           ),
-
           const VerticalDivider(width: 1, color: Colors.grey),
-
           Expanded(
             flex: 2,
             child:
