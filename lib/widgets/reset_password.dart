@@ -61,17 +61,20 @@ class _ResetPasswordState extends State<ResetPassword> {
     setState(() => _isLoading = false);
 
     if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password reset successfully')),
       );
 
       Navigator.pushAndRemoveUntil(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const LoginView()),
         (route) => false,
       );
     } else {
       final error = json.decode(response.body);
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error['message'] ?? 'Something went wrong')),
       );

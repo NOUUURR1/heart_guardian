@@ -23,23 +23,34 @@ class LineChartSample5 extends StatelessWidget {
     final List<FlSpot> bpmSpots = convertToSpots(heartRates);
     final List<FlSpot> spo2Spots = convertToSpots(spo2Levels);
 
+    if (bpmSpots.isEmpty && spo2Spots.isEmpty) {
+      return const Center(
+        child: Text(
+          'No data available to display chart.',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+
     return LineChart(
       LineChartData(
         lineBarsData: [
-          LineChartBarData(
-            spots: bpmSpots,
-            isCurved: true,
-            barWidth: 3,
-            color: Colors.red,
-            dotData: const FlDotData(show: false),
-          ),
-          LineChartBarData(
-            spots: spo2Spots,
-            isCurved: true,
-            barWidth: 3,
-            color: Colors.blue,
-            dotData: const FlDotData(show: false),
-          ),
+          if (bpmSpots.isNotEmpty)
+            LineChartBarData(
+              spots: bpmSpots,
+              isCurved: true,
+              barWidth: 3,
+              color: Colors.red,
+              dotData: const FlDotData(show: false),
+            ),
+          if (spo2Spots.isNotEmpty)
+            LineChartBarData(
+              spots: spo2Spots,
+              isCurved: true,
+              barWidth: 3,
+              color: Colors.blue,
+              dotData: const FlDotData(show: false),
+            ),
         ],
         titlesData: const FlTitlesData(show: true),
         borderData: FlBorderData(show: false),

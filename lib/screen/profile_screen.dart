@@ -44,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         birthdateController.text = data['birthdate'] ?? '';
       });
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('فشل تحميل البيانات: ${response.body}')),
       );
@@ -66,10 +67,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(const SnackBar(content: Text('تم تحديث البيانات بنجاح')));
     } else {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text('فشل التحديث: ${response.body}')));
     }

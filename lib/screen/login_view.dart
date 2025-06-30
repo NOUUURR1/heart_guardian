@@ -41,6 +41,7 @@ class _LoginViewState extends State<LoginView> {
         await prefs.setString('access_token', accessToken);
 
         showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           barrierDismissible: false,
           builder:
@@ -56,6 +57,7 @@ class _LoginViewState extends State<LoginView> {
                         horizontal: 25,
                       ),
                       decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
                         color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
@@ -99,11 +101,13 @@ class _LoginViewState extends State<LoginView> {
             MaterialPageRoute(builder: (context) => HomeView(userId: userId)),
           );
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error connecting to server')),
       );

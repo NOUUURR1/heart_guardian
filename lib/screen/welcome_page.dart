@@ -90,10 +90,12 @@ class WelcomePage extends StatelessWidget {
                           await GoogleAuthService().signInWithGoogle();
                       if (userCredential != null) {
                         Navigator.pushReplacement(
+                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(builder: (context) => LoginView()),
                         );
                       } else {
+                        // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('فشل تسجيل الدخول باستخدام Google'),

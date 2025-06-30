@@ -11,6 +11,7 @@ import 'package:heart_guardian/screen/splash_screen.dart';
 import 'package:heart_guardian/screen/notification_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -35,6 +36,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeNotifier>(

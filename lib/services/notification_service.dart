@@ -1,7 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:heart_guardian/main.dart'; // navigatorKey
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -26,8 +23,8 @@ class NotificationService {
   static Future<void> showHeartRateAlert(int bpm) async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'heart_alerts',
-          'Heart Rate Alerts',
+          'heart_alerts', // ID للقناة
+          'Heart Rate Alerts', // اسم القناة
           channelDescription: 'Alerts when heart rate is out of safe range',
           importance: Importance.max,
           priority: Priority.high,
